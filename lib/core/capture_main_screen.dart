@@ -212,7 +212,8 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
   // initialize and load our custom model
   Future<void> loadModelFromAsset() async {
     final modelPath = await getModelPath(
-      'assets/ml/fruits_model_metadata.tflite',
+      // 'assets/ml/test/fruits_model_metadata.tflite',
+      'assets/ml/real/ajinu_trained_model_with_metadata.tflite',
     );
     final options = LocalLabelerOptions(modelPath: modelPath);
 

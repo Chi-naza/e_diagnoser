@@ -1,0 +1,8 @@
+0 Cassava Blight
+1 Cassava Mosaic
+2 Yam Mosaic
+3 Yam Dry Rot
+4 Yam Anthracnose
+5 Potato Blight
+6 Potato Dry Rot
+7 Potato Soft Rot
