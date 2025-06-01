@@ -44,7 +44,7 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         centerTitle: true,
         title: Text(
-          "Enigma App Expresso",
+          "E-Diagnoser",
           style: TextStyle(
             color: Colors.white.withOpacity(0.7),
             fontWeight: FontWeight.bold,
