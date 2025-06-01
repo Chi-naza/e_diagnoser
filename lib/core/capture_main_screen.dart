@@ -36,6 +36,9 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double formattedConfidence = double.parse(resultConfidence) * 100;
+    bool isConfidencePoor = formattedConfidence < 85;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -108,15 +111,22 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
                           children: [
                             TextAndValueWidget(
                               title: 'Name',
-                              value: resultName,
+                              value:
+                                  isConfidencePoor
+                                      ? "Unrecognized"
+                                      : resultName.substring(2),
+                              textColor:
+                                  isConfidencePoor ? Colors.red : Colors.green,
                             ),
                             SizedBox(
                               width: MediaQuery.of(context).size.width * 0.15,
                             ),
                             TextAndValueWidget(
                               title: 'Accuracy',
-                              value: "%${double.parse(resultConfidence) * 100}",
-                              textColor: Colors.red,
+                              value:
+                                  "${formattedConfidence.toStringAsFixed(1)} %",
+                              textColor:
+                                  isConfidencePoor ? Colors.red : Colors.green,
                             ),
                           ],
                         ),
