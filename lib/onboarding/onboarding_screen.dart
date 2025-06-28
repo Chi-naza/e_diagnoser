@@ -67,14 +67,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       next: const Text("Next"),
       done: const Text("Done", style: TextStyle(fontWeight: FontWeight.w700)),
       onDone: () {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const CaptureMainScreen()),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const CaptureMainScreen()));
       },
       onSkip: () {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const CaptureMainScreen()),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const CaptureMainScreen()));
       },
       dotsDecorator: DotsDecorator(
         size: const Size.square(10.0),

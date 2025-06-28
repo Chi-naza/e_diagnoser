@@ -37,7 +37,7 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
   @override
   Widget build(BuildContext context) {
     double formattedConfidence = double.parse(resultConfidence) * 100;
-    bool isConfidencePoor = formattedConfidence < 85;
+    bool isConfidencePoor = formattedConfidence < 55;
 
     return Scaffold(
       appBar: AppBar(
@@ -115,8 +115,7 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
                                   isConfidencePoor
                                       ? "Unrecognized"
                                       : resultName.substring(2),
-                              textColor:
-                                  isConfidencePoor ? Colors.red : Colors.green,
+                              textColor: getResultColor(formattedConfidence),
                             ),
                             SizedBox(
                               width: MediaQuery.of(context).size.width * 0.15,
@@ -125,8 +124,7 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
                               title: 'Accuracy',
                               value:
                                   "${formattedConfidence.toStringAsFixed(1)} %",
-                              textColor:
-                                  isConfidencePoor ? Colors.red : Colors.green,
+                              textColor: getResultColor(formattedConfidence),
                             ),
                           ],
                         ),
@@ -228,5 +226,15 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
     final options = LocalLabelerOptions(modelPath: modelPath);
 
     imageLabeler = ImageLabeler(options: options);
+  }
+
+  Color getResultColor(double accuracy) {
+    if (accuracy >= 80.0) {
+      return Colors.green;
+    } else if (accuracy >= 55 && accuracy < 80) {
+      return Colors.brown;
+    } else {
+      return Colors.red;
+    }
   }
 }
