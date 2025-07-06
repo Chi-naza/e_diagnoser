@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'package:e_diagnoser/core/details/details_controller.dart';
+import 'package:e_diagnoser/core/details/details_screen.dart';
 import 'package:e_diagnoser/widgets/text_n_value_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/instance_manager.dart';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
@@ -23,6 +26,8 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
 
   String resultName = "";
   String resultConfidence = "0.0";
+
+  final detailController = Get.put(DetailsController());
 
   @override
   void initState() {
@@ -65,80 +70,100 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
               const SizedBox(height: 43),
               _image == null
                   ? Card(
-                    color: Colors.white,
-                    margin: const EdgeInsets.symmetric(horizontal: 40),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.45,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            image: const DecorationImage(
-                              image: AssetImage("assets/images/noimage.png"),
-                              fit: BoxFit.cover,
+                      color: Colors.white,
+                      margin: const EdgeInsets.symmetric(horizontal: 40),
+                      child: Column(
+                        children: [
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.45,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              image: const DecorationImage(
+                                image: AssetImage("assets/images/noimage.png"),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 13),
-                        const TextAndValueWidget(
-                          title: 'Image',
-                          value: "No Image Details To Display",
-                        ),
-                        const SizedBox(height: 13),
-                      ],
-                    ),
-                  )
+                          const SizedBox(height: 13),
+                          const TextAndValueWidget(
+                            title: 'Image',
+                            value: "No Image Details To Display",
+                          ),
+                          const SizedBox(height: 13),
+                        ],
+                      ),
+                    )
                   : Card(
-                    color: Colors.white,
-                    margin: const EdgeInsets.symmetric(horizontal: 40),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.45,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            image: DecorationImage(
-                              image: FileImage(_image!),
-                              fit: BoxFit.cover,
+                      color: Colors.white,
+                      margin: const EdgeInsets.symmetric(horizontal: 40),
+                      child: Column(
+                        children: [
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.45,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              image: DecorationImage(
+                                image: FileImage(_image!),
+                                fit: BoxFit.cover,
+                              ),
                             ),
+                            // child: Image.file(_image!),
                           ),
-                          // child: Image.file(_image!),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TextAndValueWidget(
-                              title: 'Name',
-                              value:
-                                  isConfidencePoor
-                                      ? "Unrecognized"
-                                      : resultName.substring(2),
-                              textColor: getResultColor(formattedConfidence),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.15,
-                            ),
-                            TextAndValueWidget(
-                              title: 'Accuracy',
-                              value:
-                                  "${formattedConfidence.toStringAsFixed(1)} %",
-                              textColor: getResultColor(formattedConfidence),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 15),
-                        TextAndValueWidget(
-                          title: 'Image',
-                          value: _image!.path,
-                          textColor: Colors.black38,
-                        ),
-                        const SizedBox(height: 13),
-                      ],
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextAndValueWidget(
+                                title: 'Name',
+                                value: isConfidencePoor
+                                    ? "Unrecognized"
+                                    : resultName.substring(2),
+                                textColor: getResultColor(formattedConfidence),
+                              ),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.15,
+                              ),
+                              TextAndValueWidget(
+                                title: 'Accuracy',
+                                value:
+                                    "${formattedConfidence.toStringAsFixed(1)} %",
+                                textColor: getResultColor(formattedConfidence),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 15),
+                          TextAndValueWidget(
+                            title: 'Image',
+                            value: _image!.path,
+                            textColor: Colors.black38,
+                          ),
+                          const SizedBox(height: 13),
+                        ],
+                      ),
                     ),
-                  ),
               const SizedBox(height: 30),
+              Visibility(
+                visible: resultName.isNotEmpty,
+                child: ElevatedButton(
+                  onPressed: () {
+                    detailController.askQuestion(
+                      disease: resultName.substring(2),
+                    );
+                    Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(
+                      builder: (_) => DetailsScreen(),
+                    ));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  child: const Text('See More Details'),
+                ),
+              ),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: pickAnImage,
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
