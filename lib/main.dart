@@ -1,8 +1,14 @@
 import 'package:e_diagnoser/onboarding/onboarding_screen.dart';
+import 'package:e_diagnoser/secrets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  Gemini.init(apiKey: geminiAPIKey);
+
   runApp(const MyApp());
 }
 
