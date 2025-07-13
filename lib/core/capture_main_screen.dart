@@ -4,6 +4,7 @@ import 'package:e_diagnoser/core/details/details_screen.dart';
 import 'package:e_diagnoser/widgets/text_n_value_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/instance_manager.dart';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 import 'package:image_picker/image_picker.dart';
@@ -51,8 +52,17 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
         title: Text(
           "E-Diagnoser",
           style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             fontWeight: FontWeight.bold,
+          ),
+        ),
+        leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.white,
           ),
         ),
         shape: const RoundedRectangleBorder(
