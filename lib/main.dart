@@ -34,3 +34,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// !pip install --no-cache-dir tflite-support==0.4.4
+// !pip install tflite-support-nightly

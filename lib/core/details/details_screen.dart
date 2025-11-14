@@ -28,9 +28,11 @@ class DetailsScreen extends GetView<DetailsController> {
                 )
               : SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    padding:
+                        const EdgeInsets.only(right: 13, left: 13, bottom: 60),
                     child: Text(
-                      controller.resultTextResponse.value.replaceAll(r'*', ''),
+                      controller.resultTextResponse.value
+                          .replaceAll(RegExp(r'[\*\/]'), ''),
                       textAlign: TextAlign.justify,
                       style: TextStyle(
                         color: Colors.white,
@@ -46,7 +48,7 @@ class DetailsScreen extends GetView<DetailsController> {
   }
 }
 
-class DetailsAppBar extends StatelessWidget {
+class DetailsAppBar extends GetView<DetailsController> {
   const DetailsAppBar({super.key});
 
   @override
@@ -66,6 +68,7 @@ class DetailsAppBar extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: IconButton(
             onPressed: () {
+              controller.stopSpeaking();
               Navigator.pop(context);
             },
             icon: const Icon(

@@ -1,5 +1,7 @@
 import 'package:e_diagnoser/core/capture_main_screen.dart';
+import 'package:e_diagnoser/core/details/details_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -10,6 +12,13 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  @override
+  void initState() {
+    Get.put(DetailsController());
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return IntroductionScreen(

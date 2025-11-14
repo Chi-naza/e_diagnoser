@@ -28,7 +28,7 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
   String resultName = "";
   String resultConfidence = "0.0";
 
-  final detailController = Get.put(DetailsController());
+  final detailController = Get.find<DetailsController>();
 
   @override
   void initState() {
@@ -36,6 +36,11 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
     imagePicker = ImagePicker();
     // init image labeler and load model
     loadModelFromAsset();
+    // welcome speech
+    Future.delayed(const Duration(seconds: 1), () {
+      detailController
+          .startSpeaking("Welcome back, what can I help you with today?");
+    });
     // call super
     super.initState();
   }
@@ -121,26 +126,34 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
                             // child: Image.file(_image!),
                           ),
                           const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextAndValueWidget(
-                                title: 'Name',
-                                value: isConfidencePoor
-                                    ? "Unrecognized"
-                                    : resultName.substring(2),
-                                textColor: getResultColor(formattedConfidence),
-                              ),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.15,
-                              ),
-                              TextAndValueWidget(
-                                title: 'Accuracy',
-                                value:
-                                    "${formattedConfidence.toStringAsFixed(1)} %",
-                                textColor: getResultColor(formattedConfidence),
-                              ),
-                            ],
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 3),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextAndValueWidget(
+                                  title: 'Name',
+                                  // value: isConfidencePoor
+                                  //     ? "Unrecognized"
+                                  //     : resultName.substring(2),
+                                  value: isConfidencePoor
+                                      ? "Unrecognized"
+                                      : resultName,
+                                  textColor:
+                                      getResultColor(formattedConfidence),
+                                ),
+                                // SizedBox(
+                                //   width: MediaQuery.of(context).size.width * 0.15,
+                                // ),
+                                TextAndValueWidget(
+                                  title: 'Accuracy',
+                                  value:
+                                      "${formattedConfidence.toStringAsFixed(1)} %",
+                                  textColor:
+                                      getResultColor(formattedConfidence),
+                                ),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 15),
                           TextAndValueWidget(
@@ -154,7 +167,7 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
                     ),
               const SizedBox(height: 30),
               Visibility(
-                visible: resultName.isNotEmpty,
+                visible: resultName.isNotEmpty && resultName != "Unknown",
                 child: ElevatedButton(
                   onPressed: () {
                     detailController.askQuestion(
@@ -232,6 +245,15 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
           "(NAME: $text, Confidence: ${confidence.toStringAsFixed(1)}, INDEX: $index)",
         );
       }
+
+      // Speak out the name of the disease
+      if (resultName == "Unknown") {
+        detailController.startSpeaking(
+            "The image you selected is unknown. Try again with good quality images!");
+      } else {
+        detailController
+            .startSpeaking("I just diagnosed that this image has $resultName");
+      }
     }
   }
 
@@ -256,7 +278,7 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
   Future<void> loadModelFromAsset() async {
     final modelPath = await getModelPath(
       // 'assets/ml/test/fruits_model_metadata.tflite',
-      'assets/ml/real/ajinu_trained_model_with_metadata.tflite',
+      'assets/ml/real/new_model_kaggle.tflite',
     );
     final options = LocalLabelerOptions(modelPath: modelPath);
 
