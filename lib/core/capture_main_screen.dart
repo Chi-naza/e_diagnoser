@@ -24,9 +24,13 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
   late ImagePicker imagePicker;
 
   late ImageLabeler imageLabeler;
+  late ImageLabeler imageLabeler2;
 
   String resultName = "";
+  // String resultName2 = "";
+
   String resultConfidence = "0.0";
+  // String resultConfidence2 = "0.0";
 
   final detailController = Get.find<DetailsController>();
 
@@ -133,18 +137,13 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
                               children: [
                                 TextAndValueWidget(
                                   title: 'Name',
-                                  // value: isConfidencePoor
-                                  //     ? "Unrecognized"
-                                  //     : resultName.substring(2),
-                                  value: isConfidencePoor
+                                  value: isConfidencePoor ||
+                                          resultName == "Unknown"
                                       ? "Unrecognized"
                                       : resultName,
                                   textColor:
                                       getResultColor(formattedConfidence),
                                 ),
-                                // SizedBox(
-                                //   width: MediaQuery.of(context).size.width * 0.15,
-                                // ),
                                 TextAndValueWidget(
                                   title: 'Accuracy',
                                   value:
@@ -220,15 +219,46 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
       setState(() {
         _image = File(image!.path);
       });
-      doImageLabeling(_image!);
+
+      // doImageLabeling(_image!);
+      doImageLabeling(image: _image!, fromCamera: fromCamera);
     }
   }
 
   // do image labelling
-  Future<void> doImageLabeling(File image) async {
+  Future<void> doImageLabeling(
+      {required File image, required bool fromCamera}) async {
     final InputImage inputImage = InputImage.fromFile(image);
 
     final List<ImageLabel> labels = await imageLabeler.processImage(inputImage);
+    final List<ImageLabel> labels2 =
+        await imageLabeler2.processImage(inputImage);
+
+    if (!fromCamera) {
+      for (ImageLabel secLabel in labels2) {
+        final String text = secLabel.label;
+        final int index = secLabel.index;
+        final double confidence = secLabel.confidence;
+
+        if (kDebugMode) {
+          print(
+            "(LOCAL-NAME: $text, LOCAL-Confidence: ${confidence.toStringAsFixed(1)}, LOCAL-INDEX: $index)",
+          );
+        }
+
+        // Check if it is Yam Anthracnose, then use the second less powerful model to diagnose it and return results
+        if (text == "2 Yam Anthracnose") {
+          setState(() {
+            resultName = text.substring(2);
+            resultConfidence = confidence.toStringAsFixed(2);
+          });
+
+          detailController.startSpeaking(
+              "I just diagnosed that this image has Yam Anthracnose disease");
+          return;
+        }
+      }
+    }
 
     for (ImageLabel label in labels) {
       final String text = label.label;
@@ -277,16 +307,24 @@ class _CaptureMainScreenState extends State<CaptureMainScreen> {
   // initialize and load our custom model
   Future<void> loadModelFromAsset() async {
     final modelPath = await getModelPath(
-      // 'assets/ml/test/fruits_model_metadata.tflite',
       'assets/ml/real/new_model_kaggle.tflite',
     );
+
+    final modelPath2 = await getModelPath(
+      'assets/ml/real/model_november_metadata.tflite',
+    );
+
     final options = LocalLabelerOptions(modelPath: modelPath);
+    final options2 = LocalLabelerOptions(modelPath: modelPath2);
 
     imageLabeler = ImageLabeler(options: options);
+    imageLabeler2 = ImageLabeler(options: options2);
   }
 
   Color getResultColor(double accuracy) {
-    if (accuracy >= 80.0) {
+    if (resultName == "Unknown") {
+      return Colors.red;
+    } else if (accuracy >= 80.0) {
       return Colors.green;
     } else if (accuracy >= 55 && accuracy < 80) {
       return Colors.brown;
